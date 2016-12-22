@@ -33,6 +33,8 @@ NGLScene::NGLScene(const QGLFormat _format, QWidget *_parent) : QGLWidget(_forma
   m_spinXFace=0.0f;
   m_spinYFace=0.0f;
   m_time = 0.f;
+  m_color = false;
+  m_play = false;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -74,7 +76,7 @@ void NGLScene::initializeGL()
     }
 #endif
 
-  glClearColor(0.f, 0.f, 0.0f, 0.0f);			   // White Background
+  glClearColor(1.f, 1.f, 1.0f, 0.0f);			   // White Background
   // enable depth testing for drawing
   glEnable(GL_DEPTH_TEST);
   // enable multisampling for smoother drawing
@@ -111,14 +113,14 @@ void NGLScene::initializeGL()
   glUniformMatrix4fv(m_MVPHndl, 1, GL_FALSE, glm::value_ptr(MVP));
 
   // Create our texture
-//  m_texture = new Texture("images/testImage.png");
-  m_texture = new Texture("images/dad.jpg");
+  m_texture = new Texture("images/testImage.png");
+//  m_texture = new Texture("images/dad.jpg");
 
 
   // Now we will create a basic Camera from the graphics library
   // This is a static camera so it only needs to be set once
 
-  m_cam = Camera(glm::vec3(0.0, 0.0, 2.0));
+  m_cam = Camera(glm::vec3(0.0, 0.0, 1.8));
   // set the shape using FOV 45 Aspect Ratio based on Width and Height
   // The final two are near and far clipping planes of 0.5 and 10
   m_cam.setShape(45.0f,720.0f,576.0f,0.05f,350.0f);
@@ -209,7 +211,10 @@ void NGLScene::loadMatricesToShader()
 //----------------------------------------------------------------------------------------------------------------------
 void NGLScene::timerEvent(QTimerEvent *)
 {
-    m_time += 0.00025f;
+    if(m_play)
+    {
+        m_time += 0.00025f;
+    }
     updateGL();
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -246,31 +251,46 @@ void NGLScene::paintGL()
   glActiveTexture (GL_TEXTURE0);
   m_texture->bind(0);
   m_lineDrawerShader->use();
+
   // update our time
   glUniform1f(m_timeHndl,m_time);
 
-//  glUniform1i(m_modeHndl,0);
-//  glDrawArrays(GL_LINE_STRIP, 0, m_numPoints);
+  if(!m_color)
+  {
 
-//  glUniform1i(m_modeHndl,1);
-//  glDrawArrays(GL_LINE_STRIP, 0, m_numPoints);
-//  glUniform1i(m_modeHndl,2);
-//  glDrawArrays(GL_LINE_STRIP, 0, m_numPoints);
-//  glUniform1i(m_modeHndl,3);
-//  glDrawArrays(GL_LINE_STRIP, 0, m_numPoints);
-//  glUniform1i(m_modeHndl,4);
-//  glDrawArrays(GL_LINE_STRIP, 0, m_numPoints);
+      //Disable alpha blending
+      glDisable (GL_BLEND);
+      glUniform1i(m_modeHndl,0);
+      glDrawArrays(GL_LINE_STRIP, 0, m_numPoints);
+  }
+  else
+  {
+      //disable our depth test
+      glDisable(GL_DEPTH_TEST);
+      //Enable alpha blending
+      glEnable (GL_BLEND);
+      glBlendFunc(GL_ONE, GL_ONE);
 
-  glUniform1i(m_modeHndl,5);
-  glDrawArrays(GL_LINE_STRIP, 0, m_numPoints);
-  // update our time
-  glUniform1f(m_timeHndl,m_time-0.33);
-  glUniform1i(m_modeHndl,6);
-  glDrawArrays(GL_LINE_STRIP, 0, m_numPoints);
-  // update our time
-  glUniform1f(m_timeHndl,m_time-0.66);
-  glUniform1i(m_modeHndl,7);
-  glDrawArrays(GL_LINE_STRIP, 0, m_numPoints);
+    //  glUniform1i(m_modeHndl,1);
+    //  glDrawArrays(GL_LINE_STRIP, 0, m_numPoints);
+    //  glUniform1i(m_modeHndl,2);
+    //  glDrawArrays(GL_LINE_STRIP, 0, m_numPoints);
+    //  glUniform1i(m_modeHndl,3);
+    //  glDrawArrays(GL_LINE_STRIP, 0, m_numPoints);
+    //  glUniform1i(m_modeHndl,4);
+    //  glDrawArrays(GL_LINE_STRIP, 0, m_numPoints);
+
+      glUniform1i(m_modeHndl,5);
+      glDrawArrays(GL_LINE_STRIP, 0, m_numPoints);
+      // update our time
+      glUniform1f(m_timeHndl,m_time-0.33);
+      glUniform1i(m_modeHndl,6);
+      glDrawArrays(GL_LINE_STRIP, 0, m_numPoints);
+      // update our time
+      glUniform1f(m_timeHndl,m_time-0.66);
+      glUniform1i(m_modeHndl,7);
+      glDrawArrays(GL_LINE_STRIP, 0, m_numPoints);
+  }
 
 
   QTime currentTime;
@@ -372,6 +392,23 @@ void NGLScene::keyPressEvent(QKeyEvent *_event)
   case Qt::Key_F : showFullScreen(); break;
   // show windowed
   case Qt::Key_N : showNormal(); break;
+      // toggle play
+  case Qt::Key_Space : m_play = !m_play; break;
+      //Toggle color
+  case Qt::Key_C :{
+      if(m_color)
+      {
+          m_color = false;
+          glClearColor(1.f, 1.f, 1.0f, 0.0f);
+      }
+      else
+      {
+          m_color = true;
+          glClearColor(0.f, 0.f, 0.0f, 0.0f);
+
+      }
+  }
+      break;
 
   default : break;
   }
