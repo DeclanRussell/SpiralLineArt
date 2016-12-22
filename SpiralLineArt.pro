@@ -21,28 +21,31 @@ INCLUDEPATH +=./include
 SOURCES+= src/main.cpp \
         src/MainWindow.cpp  \
         src/NGLScene.cpp  \
-        src/ParticleDrawer.cpp \
         src/Shader.cpp \
         src/ShaderProgram.cpp \
         src/ShaderUtils.cpp \
         src/Camera.cpp \
         src/Text.cpp \
+    src/Texture.cpp \
+    src/TextureUtils.cpp
 
 # same for the .h files
 HEADERS+=include/MainWindow.h \
         include/NGLScene.h \
-        include/ParticleDrawer.h \
         include/Shader.h \
         include/ShaderProgram.h \
         include/ShaderUtils.h \
         include/Camera.h \
         include/Text.h \
+    include/Texture.h \
+    include/TextureUtils.h
 
 # where our exe is going to live (root of project)
 DESTDIR=./
 # add the glsl shader files
 OTHER_FILES+= shaders/*.glsl \
                 README.md
+
 # were are going to default to a console app
 CONFIG += console
 DEFINES += _USE_MATH_DEFINES
@@ -59,3 +62,6 @@ win32:{
 QMAKE_CXXFLAGS+= -msse -msse2 -msse3
 # use this to suppress some warning from boost
 unix*:QMAKE_CXXFLAGS_WARN_ON += "-Wno-unused-parameter"
+
+DISTFILES += \
+    shaders/lineGeom.glsl

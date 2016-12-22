@@ -19,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
     format.setVersion(4,1);
     format.setProfile(QGLFormat::CoreProfile);
 
+
     //add our openGL context to our scene
     m_openGLWidget = new NGLScene(format,this);
     m_gridLayout->addWidget(m_openGLWidget,0,0,4,4);
