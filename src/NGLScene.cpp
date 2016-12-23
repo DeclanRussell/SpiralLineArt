@@ -113,8 +113,10 @@ void NGLScene::initializeGL()
   glUniformMatrix4fv(m_MVPHndl, 1, GL_FALSE, glm::value_ptr(MVP));
 
   // Create our texture
-  m_texture = new Texture("images/testImage.png");
+//  m_texture = new Texture("images/testImage.png");
 //  m_texture = new Texture("images/dad.jpg");
+//  m_texture = new Texture("images/daftPunk.jpg");
+  m_texture = new Texture("images/Dec.jpg");
 
 
   // Now we will create a basic Camera from the graphics library
